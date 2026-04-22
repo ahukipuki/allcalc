@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { categories, SITE } from '@/lib/calculators';
+import { LogoMark } from './LogoMark';
 
 export function Footer() {
   return (
@@ -8,9 +9,7 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-cream-50">
-                <span className="font-display text-xl font-bold leading-none">כ</span>
-              </span>
+              <LogoMark className="h-9 w-9" />
               <span className="font-display text-xl font-bold tracking-tight text-ink">
                 {SITE.name}
               </span>

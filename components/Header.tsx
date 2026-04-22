@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { categories, SITE } from '@/lib/calculators';
 import { SearchBar } from './SearchBar';
 import { InstallButton } from './InstallButton';
+import { LogoMark } from './LogoMark';
 
 export function Header() {
   return (
@@ -10,12 +11,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between gap-3 lg:h-20">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2">
-            <span
-              aria-hidden
-              className="grid h-9 w-9 place-items-center rounded-lg bg-ink text-cream-50 transition-transform group-hover:scale-105"
-            >
-              <span className="font-display text-xl font-bold leading-none">כ</span>
-            </span>
+            <LogoMark className="h-9 w-9 transition-transform group-hover:scale-105" />
             <span className="flex flex-col leading-tight">
               <span className="font-display text-lg font-bold tracking-tight text-ink sm:text-xl lg:text-2xl">
                 {SITE.name}
