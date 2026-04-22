@@ -9,6 +9,9 @@ import {
   SITE,
 } from '@/lib/calculators';
 import { CalculatorRenderer } from '@/components/CalculatorRenderer';
+import { ExplainerSection } from '@/components/ExplainerSection';
+import { AdSlot } from '@/components/AdSlot';
+import { AD_SLOTS } from '@/lib/adsense-config';
 
 export async function generateStaticParams() {
   return calculators.map((c) => ({ category: c.category, slug: c.slug }));
@@ -126,6 +129,12 @@ export default function CalcPage({
       <section className="container-prose py-10 md:py-14">
         <div className="mx-auto max-w-4xl">
           <CalculatorRenderer slug={calc.slug} />
+
+          {/* Ad slot: below calculator, above SEO content */}
+          <AdSlot slot={AD_SLOTS.belowCalculator} />
+
+          {/* SEO explainer (if one exists for this calculator) */}
+          <ExplainerSection slug={calc.slug} />
         </div>
       </section>
 

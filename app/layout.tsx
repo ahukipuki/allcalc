@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { PWAInstaller } from '@/components/PWAInstaller';
 import { SITE } from '@/lib/calculators';
 
 export const metadata: Metadata = {
@@ -22,6 +23,22 @@ export const metadata: Metadata = {
     'חינם',
   ],
   authors: [{ name: SITE.name }],
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'מחשבונים',
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icons/favicon-16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/icons/apple-touch-icon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'he_IL',
@@ -29,11 +46,13 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: `${SITE.name} — מאגר מחשבונים בעברית`,
     description: SITE.description,
+    images: [{ url: '/icons/icon-512.png', width: 512, height: 512 }],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: SITE.name,
     description: SITE.description,
+    images: ['/icons/icon-512.png'],
   },
   robots: {
     index: true,
@@ -46,7 +65,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#FDFCF7',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FDFCF7' },
+    { media: '(prefers-color-scheme: dark)', color: '#FDFCF7' },
+  ],
 };
 
 export default function RootLayout({
@@ -76,6 +98,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <PWAInstaller />
       </body>
     </html>
   );

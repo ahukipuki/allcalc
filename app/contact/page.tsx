@@ -18,10 +18,10 @@ export default function ContactPage() {
           נשמח לשמוע.
         </p>
         <a
-          href="mailto:hello@allcalc.co.il"
+          href="mailto:ahukipuki@gmail.com"
           className="btn-primary mt-8 inline-flex"
         >
-          hello@allcalc.co.il
+          ahukipuki@gmail.com
         </a>
         <p className="mt-6 text-sm text-ink-muted">בקשות למחשבונים חדשים מטופלות בסבב — עדיפות ניתנת למחשבונים פופולריים.</p>
       </div>

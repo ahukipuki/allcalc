@@ -54,6 +54,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/terms" className="text-ink-soft hover:text-amber">
+                  תנאי שימוש
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="text-ink-soft hover:text-amber">
                   צור קשר
                 </Link>

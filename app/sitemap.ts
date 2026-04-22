@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     { url: `${SITE.url}/about`, lastModified: now, priority: 0.3 },
     { url: `${SITE.url}/privacy`, lastModified: now, priority: 0.3 },
+    { url: `${SITE.url}/terms`, lastModified: now, priority: 0.3 },
     { url: `${SITE.url}/contact`, lastModified: now, priority: 0.3 },
   ];
 }
