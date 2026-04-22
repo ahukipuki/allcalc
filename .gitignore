@@ -1,0 +1,44 @@
+﻿# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+next-env.d.ts
+
+# Production
+build/
+dist/
+
+# Environment files (secrets)
+.env
+.env.local
+.env.*.local
+
+# Secrets / certificates (extra safety)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Archives & binaries
+*.zip
+*.tar.gz
+*.exe
+*.dmg
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Build info
+*.tsbuildinfo
