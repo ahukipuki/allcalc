@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { categories, SITE } from '@/lib/calculators';
 import { SearchBar } from './SearchBar';
+import { InstallButton } from './InstallButton';
 
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-cream-50/80 backdrop-blur-md">
       <div className="container-prose">
-        <div className="flex h-16 items-center justify-between gap-4 lg:h-20">
+        <div className="flex h-16 items-center justify-between gap-3 lg:h-20">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2">
             <span
@@ -16,7 +17,7 @@ export function Header() {
               <span className="font-display text-xl font-bold leading-none">כ</span>
             </span>
             <span className="flex flex-col leading-tight">
-              <span className="font-display text-xl font-bold tracking-tight text-ink lg:text-2xl">
+              <span className="font-display text-lg font-bold tracking-tight text-ink sm:text-xl lg:text-2xl">
                 {SITE.name}
               </span>
               <span className="hidden text-xs text-ink-muted lg:block">
@@ -30,21 +31,26 @@ export function Header() {
             <SearchBar />
           </div>
 
-          {/* Categories nav */}
-          <nav className="hidden lg:block" aria-label="קטגוריות">
-            <ul className="flex items-center gap-1">
-              {categories.slice(0, 5).map((cat) => (
-                <li key={cat.slug}>
-                  <Link
-                    href={`/${cat.slug}`}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-cream-200 hover:text-ink"
-                  >
-                    {cat.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="flex items-center gap-2">
+            {/* Install button — shown on desktop only (mobile has banner prompt) */}
+            <InstallButton />
+
+            {/* Categories nav */}
+            <nav className="hidden lg:block" aria-label="קטגוריות">
+              <ul className="flex items-center gap-1">
+                {categories.slice(0, 5).map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/${cat.slug}`}
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-cream-200 hover:text-ink"
+                    >
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
         </div>
         {/* Mobile search */}
         <div className="pb-3 md:hidden">
