@@ -1,19 +1,88 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { CalcCard, Tabs } from '@/components/ui/Primitives';
 
-// Hebrew month names as returned by Intl (no ב prefix when standalone)
-const HEBREW_MONTHS_ORDERED = [
+const HEBREW_MONTHS = [
   'תשרי', 'חשון', 'כסלו', 'טבת', 'שבט',
   'אדר', 'אדר א׳', 'אדר ב׳',
   'ניסן', 'אייר', 'סיון', 'תמוז', 'אב', 'אלול',
 ];
 
+// Gematria: number → Hebrew letters (just the hundreds+tens+ones, no thousand marker)
+// A Hebrew year like 5786 is written just as "תשפ״ו" — the millennium ("ה") is implicit.
+function toGematria(n: number): string {
+  if (n <= 0) return String(n);
+  const rem = n % 1000;
+  return insertGershayim(gematriaSmall(rem));
+}
+
+function gematriaSmall(n: number): string {
+  if (n === 0) return '';
+  const hundreds = Math.floor(n / 100);
+  const remainder = n % 100;
+
+  const hundredsLetters = ['', 'ק', 'ר', 'ש', 'ת', 'תק', 'תר', 'תש', 'תת', 'תתק'];
+  let out = hundredsLetters[hundreds] || '';
+
+  // Special forms: 15 = טו (not יה), 16 = טז (not יו), to avoid divine name combinations
+  if (remainder === 15) return out + 'טו';
+  if (remainder === 16) return out + 'טז';
+
+  const tens = Math.floor(remainder / 10);
+  const ones = remainder % 10;
+  const tensLetters = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+  const onesLetters = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+  out += tensLetters[tens] + onesLetters[ones];
+  return out;
+}
+
+function insertGershayim(s: string): string {
+  if (s.length === 0) return s;
+  if (s.length === 1) return s + '׳';
+  return s.slice(0, -1) + '״' + s.slice(-1);
+}
+
+// ---- Hebrew letters → number (parse gematria) ----
+const LETTER_VALUES: Record<string, number> = {
+  א: 1, ב: 2, ג: 3, ד: 4, ה: 5, ו: 6, ז: 7, ח: 8, ט: 9,
+  י: 10, כ: 20, ך: 20, ל: 30, מ: 40, ם: 40, נ: 50, ן: 50,
+  ס: 60, ע: 70, פ: 80, ף: 80, צ: 90, ץ: 90,
+  ק: 100, ר: 200, ש: 300, ת: 400,
+};
+
+function fromGematria(s: string): number {
+  const trimmed = s.trim();
+  if (!trimmed) return 0;
+  const clean = trimmed.replace(/[׳״'"]/g, '');
+  if (!clean) return 0;
+  let total = 0;
+  // If starts with "ה׳" (or "ה'") — this is the thousands marker for 5000
+  const startsWith5K = /^ה[׳״'"]/.test(trimmed);
+  let startIdx = 0;
+  if (startsWith5K) {
+    total += 5000;
+    startIdx = 1;
+  }
+  for (let i = startIdx; i < clean.length; i++) {
+    const ch = clean[i];
+    if (LETTER_VALUES[ch] !== undefined) {
+      total += LETTER_VALUES[ch];
+    }
+  }
+  // If no explicit "ה׳" marker and result is small, assume 5xxx
+  if (!startsWith5K && total > 0 && total < 1000) {
+    total += 5000;
+  }
+  return total;
+}
+
 function gregorianToHebrew(date: Date): {
   year: number;
   monthName: string;
   day: number;
+  yearHebrew: string;
+  dayHebrew: string;
   full: string;
 } {
   const fmt = new Intl.DateTimeFormat('he-u-ca-hebrew', {
@@ -22,76 +91,51 @@ function gregorianToHebrew(date: Date): {
     day: 'numeric',
   });
   const parts = fmt.formatToParts(date);
-  // Hebrew number format: "י׳ באייר ה׳תשפ״ו" — we want to remove the "ב" prefix from month
-  let year = '';
+  let year = 0;
   let monthName = '';
-  let day = '';
+  let day = 0;
   for (const p of parts) {
-    if (p.type === 'year') year = p.value;
+    if (p.type === 'year') year = parseInt(p.value, 10);
     else if (p.type === 'month') monthName = p.value.replace(/^ב/, '');
-    else if (p.type === 'day') day = p.value;
+    else if (p.type === 'day') day = parseInt(p.value, 10);
   }
-  const full = fmt.format(date);
-  // Convert gematria year to arabic by brute-force searching
-  const yearNum = parseGematria(year);
-  const dayNum = parseInt(day, 10);
+  const yearHebrew = toGematria(year);
+  const dayHebrew = toGematria(day);
   return {
-    year: yearNum,
+    year,
     monthName,
-    day: dayNum,
-    full,
+    day,
+    yearHebrew,
+    dayHebrew,
+    full: `${dayHebrew} ${monthName} ${yearHebrew}`,
   };
-}
-
-// Parse Hebrew year string like "ה׳תשפ״ו" back to a number
-function parseGematria(s: string): number {
-  const letters: Record<string, number> = {
-    א: 1, ב: 2, ג: 3, ד: 4, ה: 5, ו: 6, ז: 7, ח: 8, ט: 9,
-    י: 10, כ: 20, ך: 20, ל: 30, מ: 40, ם: 40, נ: 50, ן: 50,
-    ס: 60, ע: 70, פ: 80, ף: 80, צ: 90, ץ: 90, ק: 100, ר: 200, ש: 300, ת: 400,
-  };
-  let total = 0;
-  let thousands = 0;
-  const clean = s.replace(/[׳״'"]/g, '');
-  for (const ch of clean) {
-    if (letters[ch] !== undefined) {
-      total += letters[ch];
-    }
-  }
-  // If year starts with ה (5000), it's actually ה'תשפ"ו means 5786
-  if (clean.startsWith('ה')) {
-    // First letter is thousands
-    total += 5000 - letters['ה'];
-  }
-  return total;
 }
 
 function hebrewToGregorian(year: number, monthName: string, day: number): Date | null {
-  // Normalize the user's month input to match what Intl returns
-  const normMonth = monthName.trim();
+  if (!year || !monthName || !day) return null;
   const fmt = new Intl.DateTimeFormat('he-u-ca-hebrew', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
-  // Hebrew year Y ≈ Gregorian year Y-3761 to Y-3760
   const approxGreg = year - 3761;
   const start = new Date(approxGreg, 0, 1);
-  for (let offset = -10; offset <= 400; offset++) {
+  for (let offset = -30; offset <= 420; offset++) {
     const d = new Date(start);
     d.setDate(d.getDate() + offset);
     const parts = fmt.formatToParts(d);
-    const y = parseGematria((parts.find((p) => p.type === 'year') || { value: '' }).value);
-    let m = (parts.find((p) => p.type === 'month') || { value: '' }).value.replace(/^ב/, '');
+    const y = parseInt((parts.find((p) => p.type === 'year') || { value: '0' }).value, 10);
+    const mRaw = (parts.find((p) => p.type === 'month') || { value: '' }).value;
+    const m = mRaw.replace(/^ב/, '').trim();
     const dd = parseInt((parts.find((p) => p.type === 'day') || { value: '0' }).value, 10);
-    if (y === year && dd === day && (m === normMonth || m.includes(normMonth) || normMonth.includes(m))) {
+    if (y === year && dd === day && m === monthName.trim()) {
       return d;
     }
   }
   return null;
 }
 
-function gregorianYMD(d: Date): string {
+function gregorianLabel(d: Date): string {
   return d.toLocaleDateString('he-IL', {
     weekday: 'long',
     year: 'numeric',
@@ -102,17 +146,39 @@ function gregorianYMD(d: Date): string {
 
 export default function HebrewDate() {
   const [mode, setMode] = useState<'gh' | 'hg'>('gh');
-  const today = new Date();
 
-  // Gregorian → Hebrew state
-  const [gDate, setGDate] = useState(
-    `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-  );
+  // Initial state: today. `useState(() => ...)` runs on the client only,
+  // so it uses the real "today" when the user lands on the page (not the build-time date).
+  const initial = () => {
+    const t = new Date();
+    const iso = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    const heb = gregorianToHebrew(t);
+    return { iso, heb };
+  };
+  const [gDate, setGDate] = useState(() => initial().iso);
+  const [hYearText, setHYearText] = useState(() => initial().heb.yearHebrew);
+  const [hMonth, setHMonth] = useState(() => initial().heb.monthName);
+  const [hDay, setHDay] = useState<number | ''>(() => initial().heb.day);
 
-  // Hebrew → Gregorian state
-  const [hYear, setHYear] = useState<number | ''>(5786);
-  const [hMonth, setHMonth] = useState<string>('תשרי');
-  const [hDay, setHDay] = useState<number | ''>(1);
+  // Extra safety: refresh to today once on mount. This guarantees that
+  // cached HTML from a previous day doesn't display yesterday's date.
+  useEffect(() => {
+    const { iso, heb } = initial();
+    setGDate(iso);
+    setHYearText(heb.yearHebrew);
+    setHMonth(heb.monthName);
+    setHDay(heb.day);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const hYearNumber = useMemo(() => {
+    const trimmed = hYearText.trim();
+    if (/^\d+$/.test(trimmed)) {
+      const n = parseInt(trimmed, 10);
+      return n > 0 && n < 1000 ? n + 5000 : n;
+    }
+    return fromGematria(trimmed);
+  }, [hYearText]);
 
   const ghResult = useMemo(() => {
     const parts = gDate.split('-');
@@ -121,16 +187,14 @@ export default function HebrewDate() {
     if (!y || !m || !d) return null;
     const date = new Date(y, m - 1, d);
     if (isNaN(date.getTime())) return null;
-    const heb = gregorianToHebrew(date);
-    return { date, heb };
+    return { date, heb: gregorianToHebrew(date) };
   }, [gDate]);
 
   const hgResult = useMemo(() => {
-    if (typeof hYear !== 'number' || typeof hDay !== 'number' || !hMonth) return null;
-    const g = hebrewToGregorian(hYear, hMonth, hDay);
-    if (!g) return null;
-    return { date: g, gregorianText: gregorianYMD(g) };
-  }, [hYear, hMonth, hDay]);
+    if (!hYearNumber || !hMonth || typeof hDay !== 'number') return null;
+    const g = hebrewToGregorian(hYearNumber, hMonth, hDay);
+    return g ? { date: g, label: gregorianLabel(g) } : null;
+  }, [hYearNumber, hMonth, hDay]);
 
   return (
     <CalcCard>
@@ -159,11 +223,11 @@ export default function HebrewDate() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <div className="text-xs text-ink-muted">תאריך לועזי</div>
-                  <div className="text-xl font-bold text-ink">{gregorianYMD(ghResult.date)}</div>
+                  <div className="mt-1 text-xl font-bold text-ink">{gregorianLabel(ghResult.date)}</div>
                 </div>
                 <div>
                   <div className="text-xs text-ink-muted">תאריך עברי</div>
-                  <div className="text-xl font-bold text-amber">{ghResult.heb.full}</div>
+                  <div className="mt-1 text-2xl font-bold text-amber-ink">{ghResult.heb.full}</div>
                   <div className="mt-1 text-sm text-ink-muted">
                     {ghResult.heb.day} {ghResult.heb.monthName} {ghResult.heb.year}
                   </div>
@@ -182,7 +246,9 @@ export default function HebrewDate() {
               <input
                 type="number"
                 value={hDay}
-                onChange={(e) => setHDay(e.target.value === '' ? '' : parseInt(e.target.value))}
+                onChange={(e) =>
+                  setHDay(e.target.value === '' ? '' : parseInt(e.target.value))
+                }
                 min={1}
                 max={30}
                 className="input-base w-full"
@@ -195,7 +261,7 @@ export default function HebrewDate() {
                 onChange={(e) => setHMonth(e.target.value)}
                 className="input-base w-full"
               >
-                {HEBREW_MONTHS_ORDERED.map((m) => (
+                {HEBREW_MONTHS.map((m) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
               </select>
@@ -203,35 +269,36 @@ export default function HebrewDate() {
             <div>
               <label className="label-base">שנה עברית</label>
               <input
-                type="number"
-                value={hYear}
-                onChange={(e) => setHYear(e.target.value === '' ? '' : parseInt(e.target.value))}
-                min={5000}
-                max={6000}
+                type="text"
+                value={hYearText}
+                onChange={(e) => setHYearText(e.target.value)}
+                placeholder="תשפ״ו"
                 className="input-base w-full"
+                dir="rtl"
               />
+              <div className="mt-1 text-xs text-ink-muted">
+                {hYearNumber > 0 ? `= ${hYearNumber}` : 'הקלד אותיות עבריות או מספר'}
+              </div>
             </div>
           </div>
+
           {hgResult ? (
             <div className="mt-6 rounded-xl border border-amber/30 bg-amber-wash/40 p-5">
-              <div>
-                <div className="text-xs text-ink-muted">תאריך לועזי</div>
-                <div className="text-2xl font-bold text-amber">{hgResult.gregorianText}</div>
-              </div>
+              <div className="text-xs text-ink-muted">תאריך לועזי</div>
+              <div className="mt-1 text-2xl font-bold text-amber-ink">{hgResult.label}</div>
             </div>
           ) : (
-            <div className="mt-6 rounded-xl border border-amber/30 bg-amber-wash/40 p-5">
-              <div className="text-center text-ink-muted">
-                לא נמצא תאריך לועזי מתאים. ודא שהקלט תקין (חודש קיים בשנה המבוקשת).
-              </div>
+            <div className="mt-6 rounded-xl border border-line bg-cream-100 p-5 text-center text-sm text-ink-muted">
+              לא נמצא תאריך לועזי מתאים. ודא שהחודש והיום תקינים עבור השנה שהוזנה.
             </div>
           )}
         </>
       )}
 
       <div className="mt-6 rounded-lg border border-line bg-cream-100 p-4 text-xs leading-relaxed text-ink-muted">
-        המרת תאריכים מבוססת על לוח השנה העברי התקני המוטבע בדפדפן. חודש &ldquo;אדר&rdquo;
-        מחולק ל&ldquo;אדר א׳&rdquo; ו&ldquo;אדר ב׳&rdquo; בשנים מעוברות (7 פעמים בכל מחזור של 19 שנה).
+        המרת התאריכים מבוססת על לוח השנה העברי התקני המובנה בדפדפן. בשנים מעוברות (7
+        פעמים בכל מחזור של 19 שנה) חודש &ldquo;אדר&rdquo; מוחלף ב&ldquo;אדר א׳&rdquo;
+        ו&ldquo;אדר ב׳&rdquo;. ניתן להזין שנה כגימטריה (תשפ&rdquo;ו) או כמספר (5786).
       </div>
     </CalcCard>
   );
