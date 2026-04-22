@@ -11,7 +11,7 @@ export interface Explainer {
 }
 
 export const explainers: Record<string, Explainer> = {
-  mashkanta: {
+  mortgage: {
     title: 'מדריך מחשבון המשכנתא',
     sections: [
       {
@@ -28,14 +28,14 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'mas-rechisha', label: 'מחשבון מס רכישה' },
-      { slug: 'halvaa', label: 'מחשבון הלוואה' },
-      { slug: 'ribit-deribit', label: 'מחשבון ריבית דריבית' },
-      { slug: 'hisachon', label: 'מחשבון חיסכון' },
+      { slug: 'purchase-tax', label: 'מחשבון מס רכישה' },
+      { slug: 'loan', label: 'מחשבון הלוואה' },
+      { slug: 'compound-interest', label: 'מחשבון ריבית דריבית' },
+      { slug: 'savings', label: 'מחשבון חיסכון' },
     ],
   },
 
-  'sachar-neto': {
+  'net-salary': {
     title: 'מדריך מחשבון שכר נטו',
     sections: [
       {
@@ -52,13 +52,13 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'mas-hachnasa', label: 'מחשבון מס הכנסה' },
-      { slug: 'pitzuyey-piturin', label: 'מחשבון פיצויי פיטורים' },
-      { slug: 'hisachon', label: 'מחשבון חיסכון חודשי' },
+      { slug: 'income-tax', label: 'מחשבון מס הכנסה' },
+      { slug: 'severance', label: 'מחשבון פיצויי פיטורים' },
+      { slug: 'savings', label: 'מחשבון חיסכון חודשי' },
     ],
   },
 
-  'mas-hachnasa': {
+  'income-tax': {
     title: 'מדריך מחשבון מס הכנסה',
     sections: [
       {
@@ -75,13 +75,13 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'sachar-neto', label: 'מחשבון שכר נטו' },
-      { slug: 'pitzuyey-piturin', label: 'מחשבון פיצויי פיטורים' },
-      { slug: 'maam', label: 'מחשבון מע״מ' },
+      { slug: 'net-salary', label: 'מחשבון שכר נטו' },
+      { slug: 'severance', label: 'מחשבון פיצויי פיטורים' },
+      { slug: 'vat', label: 'מחשבון מע״מ' },
     ],
   },
 
-  halvaa: {
+  loan: {
     title: 'מדריך מחשבון הלוואה',
     sections: [
       {
@@ -98,13 +98,13 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'mashkanta', label: 'מחשבון משכנתא' },
-      { slug: 'ribit-deribit', label: 'מחשבון ריבית דריבית' },
-      { slug: 'pikadon', label: 'מחשבון פיקדון' },
+      { slug: 'mortgage', label: 'מחשבון משכנתא' },
+      { slug: 'compound-interest', label: 'מחשבון ריבית דריבית' },
+      { slug: 'deposit', label: 'מחשבון פיקדון' },
     ],
   },
 
-  'ribit-deribit': {
+  'compound-interest': {
     title: 'מדריך ריבית דריבית',
     sections: [
       {
@@ -121,13 +121,13 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'hisachon', label: 'מחשבון חיסכון חודשי' },
-      { slug: 'pikadon', label: 'מחשבון פיקדון' },
-      { slug: 'teshuah', label: 'מחשבון תשואה' },
+      { slug: 'savings', label: 'מחשבון חיסכון חודשי' },
+      { slug: 'deposit', label: 'מחשבון פיקדון' },
+      { slug: 'roi', label: 'מחשבון תשואה' },
     ],
   },
 
-  maam: {
+  vat: {
     title: 'מדריך מחשבון מע״מ',
     sections: [
       {
@@ -144,8 +144,8 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'achuzim', label: 'מחשבון אחוזים' },
-      { slug: 'mas-hachnasa', label: 'מחשבון מס הכנסה' },
+      { slug: 'percentage', label: 'מחשבון אחוזים' },
+      { slug: 'income-tax', label: 'מחשבון מס הכנסה' },
       { slug: 'tip', label: 'מחשבון טיפ' },
     ],
   },
@@ -168,13 +168,13 @@ export const explainers: Record<string, Explainer> = {
     ],
     relatedSlugs: [
       { slug: 'bmr', label: 'מחשבון BMR' },
-      { slug: 'caloriot', label: 'מחשבון קלוריות יומיות' },
-      { slug: 'achuz-shuman', label: 'מחשבון אחוז שומן' },
-      { slug: 'mishkal-ideali', label: 'מחשבון משקל אידיאלי' },
+      { slug: 'calories', label: 'מחשבון קלוריות יומיות' },
+      { slug: 'body-fat', label: 'מחשבון אחוז שומן' },
+      { slug: 'ideal-weight', label: 'מחשבון משקל אידיאלי' },
     ],
   },
 
-  caloriot: {
+  calories: {
     title: 'מדריך קלוריות יומיות (TDEE)',
     sections: [
       {
@@ -193,12 +193,12 @@ export const explainers: Record<string, Explainer> = {
     relatedSlugs: [
       { slug: 'bmr', label: 'מחשבון BMR' },
       { slug: 'bmi', label: 'מחשבון BMI' },
-      { slug: 'macro', label: 'מחשבון מאקרו' },
-      { slug: 'shtiyat-mayim', label: 'מחשבון שתיית מים' },
+      { slug: 'macros', label: 'מחשבון מאקרו' },
+      { slug: 'water-intake', label: 'מחשבון שתיית מים' },
     ],
   },
 
-  gil: {
+  age: {
     title: 'מדריך מחשבון גיל',
     sections: [
       {
@@ -215,13 +215,13 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'hefresh-tarichim', label: 'מחשבון הפרש תאריכים' },
-      { slug: 'yom-bashavua', label: 'איזה יום בשבוע' },
-      { slug: 'sefirah-leachor', label: 'ספירה לאחור' },
+      { slug: 'date-diff', label: 'מחשבון הפרש תאריכים' },
+      { slug: 'day-of-week', label: 'איזה יום בשבוע' },
+      { slug: 'countdown', label: 'ספירה לאחור' },
     ],
   },
 
-  achuzim: {
+  percentage: {
     title: 'מדריך מחשבון אחוזים',
     sections: [
       {
@@ -238,9 +238,9 @@ export const explainers: Record<string, Explainer> = {
       },
     ],
     relatedSlugs: [
-      { slug: 'maam', label: 'מחשבון מע״מ' },
-      { slug: 'shvarim', label: 'מחשבון שברים' },
-      { slug: 'memutza', label: 'מחשבון ממוצע' },
+      { slug: 'vat', label: 'מחשבון מע״מ' },
+      { slug: 'fractions', label: 'מחשבון שברים' },
+      { slug: 'average', label: 'מחשבון ממוצע' },
     ],
   },
 };
