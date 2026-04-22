@@ -3,6 +3,7 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
+import { Analytics } from '@/components/Analytics';
 import { SITE } from '@/lib/calculators';
 
 export const metadata: Metadata = {
@@ -99,6 +100,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <ServiceWorkerRegister />
+        <Analytics />
       </body>
     </html>
   );
