@@ -124,7 +124,6 @@ export const calculators: Calculator[] = [
   { slug: 'workdays', category: 'date', title: 'מחשבון ימי עבודה', shortTitle: 'ימי עבודה', description: 'חישוב ימי עבודה בין שני תאריכים — ללא סופי שבוע ועם אפשרות להחריג חגים.', keywords: ['ימי עבודה', 'מחשבון ימי עסקים', 'חישוב ימי עבודה'] },
   { slug: 'work-hours', category: 'date', title: 'מחשבון שעות עבודה', shortTitle: 'שעות עבודה', description: 'חישוב שעות עבודה — חיבור שעות, חישוב שעות נוספות וסיכום שכר לפי שעה.', keywords: ['מחשבון שעות עבודה', 'שעות נוספות', 'חיבור שעות'] },
   { slug: 'countdown', category: 'date', title: 'ספירה לאחור לתאריך', shortTitle: 'ספירה לאחור', description: 'כמה זמן נותר עד תאריך — ימים, שעות, דקות ושניות בזמן אמת.', keywords: ['ספירה לאחור', 'כמה זמן נשאר', 'countdown'] },
-  { slug: 'day-of-week', category: 'date', title: 'איזה יום בשבוע', shortTitle: 'יום בשבוע', description: 'באיזה יום בשבוע נפל תאריך מסוים? חישוב מהיר לכל תאריך עבר או עתיד.', keywords: ['איזה יום בשבוע', 'יום מתאריך', 'חישוב יום'] },
   { slug: 'hebrew-date', category: 'date', title: 'ממיר תאריך עברי ללועזי', shortTitle: 'תאריך עברי', description: 'המרה בין תאריך עברי לתאריך לועזי בשני הכיוונים. כולל שנים מעוברות ואדר א׳/ב׳.', keywords: ['המרת תאריך עברי', 'תאריך לועזי לעברי', 'לוח שנה עברי', 'תאריך לידה עברי'], popular: true },
 
   { slug: 'length', category: 'conversion', title: 'ממיר יחידות אורך', shortTitle: 'אורך', description: 'המרת יחידות אורך — מטר, ס״מ, מ״מ, ק״מ, אינץ׳, רגל, יארד ומייל.', keywords: ['המרת אורך', 'מטר לאינץ', 'ק״מ למייל'] },

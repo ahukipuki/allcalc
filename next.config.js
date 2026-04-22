@@ -60,7 +60,10 @@ const CALC_REDIRECT_MAP = {
   'yemei-avoda': 'workdays',
   'shaot-avoda': 'work-hours',
   'sefirah-leachor': 'countdown',
-  'yom-bashavua': 'day-of-week',
+  // Deprecated — day-of-week calculator removed. Both the old transliteration
+  // and the English slug now redirect to the date category landing.
+  'yom-bashavua': 'REMOVED_DAY_OF_WEEK',
+  'day-of-week': 'REMOVED_DAY_OF_WEEK',
   // conversion
   orech: 'length',
   mishkal: 'weight',
@@ -78,13 +81,17 @@ const CALC_REDIRECT_MAP = {
   'mispar-ekrai': 'random-number',
 };
 
-// Build per-calc redirects: any new-category path with an old slug → same category with new slug
+// Build per-calc redirects: any new-category path with an old slug → same category with new slug.
+// The sentinel value 'REMOVED_...' means the calculator was removed; redirect to category root instead.
 const CALC_REDIRECTS = [];
 for (const [oldSlug, newSlug] of Object.entries(CALC_REDIRECT_MAP)) {
   for (const cat of ['finance', 'health', 'math', 'date', 'conversion', 'misc']) {
+    const destination = newSlug.startsWith('REMOVED_')
+      ? `/${cat}`
+      : `/${cat}/${newSlug}`;
     CALC_REDIRECTS.push({
       source: `/${cat}/${oldSlug}`,
-      destination: `/${cat}/${newSlug}`,
+      destination,
     });
   }
 }

@@ -54,7 +54,6 @@ const components: Record<string, React.ComponentType> = {
   workdays: dynamic(() => import('./calculators/YemeiAvoda').then((m) => m.default), { loading }),
   'work-hours': dynamic(() => import('./calculators/ShaotAvoda').then((m) => m.default), { loading }),
   countdown: dynamic(() => import('./calculators/SefirahLeachor').then((m) => m.default), { loading }),
-  'day-of-week': dynamic(() => import('./calculators/YomBashavua').then((m) => m.default), { loading }),
   'hebrew-date': dynamic(() => import('./calculators/HebrewDate').then((m) => m.default), { loading }),
   // Conversion
   length: dynamic(() => import('./calculators/UnitOrech').then((m) => m.default), { loading }),

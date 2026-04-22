@@ -216,7 +216,6 @@ export const explainers: Record<string, Explainer> = {
     ],
     relatedSlugs: [
       { slug: 'date-diff', label: 'מחשבון הפרש תאריכים' },
-      { slug: 'day-of-week', label: 'איזה יום בשבוע' },
       { slug: 'countdown', label: 'ספירה לאחור' },
     ],
   },
@@ -600,7 +599,6 @@ export const explainers: Record<string, Explainer> = {
     relatedSlugs: [
       { slug: 'age', label: 'מחשבון גיל' },
       { slug: 'date-diff', label: 'מחשבון הפרש תאריכים' },
-      { slug: 'day-of-week', label: 'איזה יום בשבוע' },
     ],
   },
 };

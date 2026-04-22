@@ -111,6 +111,30 @@ function gregorianToHebrew(date: Date): {
   };
 }
 
+// Normalize Adar variations between what the user picked and what Intl returns.
+//
+// Rules:
+//   - Exact match always wins.
+//   - In a non-leap year, Intl returns plain "אדר". If user picked "אדר א׳" or "אדר ב׳"
+//     (e.g. dropdown remembered an old value), treat both as matching "אדר" — there's
+//     only one Adar that year.
+//   - In a leap year, Intl returns "אדר א׳" or "אדר ב׳". If user picked plain "אדר"
+//     (ambiguous), we map it to אדר ב׳ — the "real" Adar where Purim/birthdays fall.
+//   - Do NOT cross-match "אדר א׳" ↔ "אדר ב׳" in leap years — they're different months.
+function monthsMatch(userPick: string, intlReturned: string): boolean {
+  const a = userPick.trim();
+  const b = intlReturned.trim();
+  if (a === b) return true;
+
+  // Non-leap year: Intl = "אדר". User may have picked any Adar variant.
+  if (b === 'אדר' && (a === 'אדר א׳' || a === 'אדר ב׳')) return true;
+
+  // Leap year: user picked plain "אדר" (ambiguous) → map to אדר ב׳.
+  if (a === 'אדר' && b === 'אדר ב׳') return true;
+
+  return false;
+}
+
 function hebrewToGregorian(year: number, monthName: string, day: number): Date | null {
   if (!year || !monthName || !day) return null;
   const fmt = new Intl.DateTimeFormat('he-u-ca-hebrew', {
@@ -118,9 +142,11 @@ function hebrewToGregorian(year: number, monthName: string, day: number): Date |
     month: 'long',
     day: 'numeric',
   });
-  const approxGreg = year - 3761;
-  const start = new Date(approxGreg, 0, 1);
-  for (let offset = -30; offset <= 420; offset++) {
+  // Hebrew year Y spans roughly Sep of (Y-3761) through Sep of (Y-3760).
+  // Start at June of (Y-3761) to be safely before Rosh Hashana, then search
+  // ~500 days forward to cover the entire Hebrew year (regular or leap).
+  const start = new Date(year - 3761, 5, 1); // June 1 of (Y-3761)
+  for (let offset = 0; offset <= 500; offset++) {
     const d = new Date(start);
     d.setDate(d.getDate() + offset);
     const parts = fmt.formatToParts(d);
@@ -128,7 +154,7 @@ function hebrewToGregorian(year: number, monthName: string, day: number): Date |
     const mRaw = (parts.find((p) => p.type === 'month') || { value: '' }).value;
     const m = mRaw.replace(/^ב/, '').trim();
     const dd = parseInt((parts.find((p) => p.type === 'day') || { value: '0' }).value, 10);
-    if (y === year && dd === day && m === monthName.trim()) {
+    if (y === year && dd === day && monthsMatch(monthName, m)) {
       return d;
     }
   }
@@ -179,6 +205,43 @@ export default function HebrewDate() {
     }
     return fromGematria(trimmed);
   }, [hYearText]);
+
+  // Detect leap year via Intl by checking if אדר ב׳ exists
+  const isLeapYear = useMemo(() => {
+    if (!hYearNumber) return false;
+    const fmt = new Intl.DateTimeFormat('he-u-ca-hebrew', { year: 'numeric', month: 'long', day: 'numeric' });
+    const start = new Date(hYearNumber - 3761, 5, 1); // June 1 of (Y-3761)
+    for (let offset = 0; offset <= 500; offset++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + offset);
+      const parts = fmt.formatToParts(d);
+      const y = parseInt((parts.find((p) => p.type === 'year') || { value: '0' }).value, 10);
+      const m = (parts.find((p) => p.type === 'month') || { value: '' }).value.replace(/^ב/, '').trim();
+      if (y === hYearNumber && m === 'אדר ב׳') return true;
+    }
+    return false;
+  }, [hYearNumber]);
+
+  // Filter month list: leap years get אדר א׳/ב׳, non-leap years get plain אדר
+  const availableMonths = useMemo(() => {
+    const baseOrder = ['תשרי', 'חשון', 'כסלו', 'טבת', 'שבט'];
+    const adar = isLeapYear ? ['אדר א׳', 'אדר ב׳'] : ['אדר'];
+    const rest = ['ניסן', 'אייר', 'סיון', 'תמוז', 'אב', 'אלול'];
+    return [...baseOrder, ...adar, ...rest];
+  }, [isLeapYear]);
+
+  // Keep the month selection valid when the year changes
+  useEffect(() => {
+    if (!availableMonths.includes(hMonth)) {
+      // If user was on one of the Adar variants and year changed, map to the right one
+      if (['אדר', 'אדר א׳', 'אדר ב׳'].includes(hMonth)) {
+        setHMonth(isLeapYear ? 'אדר ב׳' : 'אדר');
+      } else {
+        setHMonth(availableMonths[0]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableMonths]);
 
   const ghResult = useMemo(() => {
     const parts = gDate.split('-');
@@ -261,7 +324,7 @@ export default function HebrewDate() {
                 onChange={(e) => setHMonth(e.target.value)}
                 className="input-base w-full"
               >
-                {HEBREW_MONTHS.map((m) => (
+                {availableMonths.map((m) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
               </select>
