@@ -26,6 +26,10 @@ const components: Record<string, React.ComponentType> = {
   'annual-leave': dynamic(() => import('./calculators/AnnualLeave').then((m) => m.default), { loading }),
   'sick-days': dynamic(() => import('./calculators/SickDays').then((m) => m.default), { loading }),
   'minimum-wage': dynamic(() => import('./calculators/MinimumWage').then((m) => m.default), { loading }),
+  overtime: dynamic(() => import('./calculators/Overtime').then((m) => m.default), { loading }),
+  'maternity-pay': dynamic(() => import('./calculators/MaternityPay').then((m) => m.default), { loading }),
+  'travel-reimbursement': dynamic(() => import('./calculators/TravelReimbursement').then((m) => m.default), { loading }),
+  'tax-credit-points': dynamic(() => import('./calculators/TaxCreditPoints').then((m) => m.default), { loading }),
   // Health
   bmi: dynamic(() => import('./calculators/Bmi').then((m) => m.default), { loading }),
   bmr: dynamic(() => import('./calculators/Bmr').then((m) => m.default), { loading }),
