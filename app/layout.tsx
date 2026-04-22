@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { PWAInstaller } from '@/components/PWAInstaller';
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 import { SITE } from '@/lib/calculators';
 
 export const metadata: Metadata = {
@@ -98,7 +98,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <PWAInstaller />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
