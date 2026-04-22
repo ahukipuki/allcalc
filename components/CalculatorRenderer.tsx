@@ -22,6 +22,10 @@ const components: Record<string, React.ComponentType> = {
   'net-salary': dynamic(() => import('./calculators/SacharNeto').then((m) => m.default), { loading }),
   severance: dynamic(() => import('./calculators/PitzuyeyPiturin').then((m) => m.default), { loading }),
   'purchase-tax': dynamic(() => import('./calculators/MasRechisha').then((m) => m.default), { loading }),
+  'recovery-pay': dynamic(() => import('./calculators/RecoveryPay').then((m) => m.default), { loading }),
+  'annual-leave': dynamic(() => import('./calculators/AnnualLeave').then((m) => m.default), { loading }),
+  'sick-days': dynamic(() => import('./calculators/SickDays').then((m) => m.default), { loading }),
+  'minimum-wage': dynamic(() => import('./calculators/MinimumWage').then((m) => m.default), { loading }),
   // Health
   bmi: dynamic(() => import('./calculators/Bmi').then((m) => m.default), { loading }),
   bmr: dynamic(() => import('./calculators/Bmr').then((m) => m.default), { loading }),
@@ -51,6 +55,7 @@ const components: Record<string, React.ComponentType> = {
   'work-hours': dynamic(() => import('./calculators/ShaotAvoda').then((m) => m.default), { loading }),
   countdown: dynamic(() => import('./calculators/SefirahLeachor').then((m) => m.default), { loading }),
   'day-of-week': dynamic(() => import('./calculators/YomBashavua').then((m) => m.default), { loading }),
+  'hebrew-date': dynamic(() => import('./calculators/HebrewDate').then((m) => m.default), { loading }),
   // Conversion
   length: dynamic(() => import('./calculators/UnitOrech').then((m) => m.default), { loading }),
   weight: dynamic(() => import('./calculators/UnitMishkal').then((m) => m.default), { loading }),
